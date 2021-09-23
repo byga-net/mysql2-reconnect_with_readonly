@@ -18,7 +18,8 @@ module Mysql2
       begin
         yield block
       rescue Mysql2::Error => e
-        if e.message =~ /read-only/
+        # if e.message =~ Regexp.union(/Lost connection/, /gone away/, /read-only/, /Can't connect/, /MySQL client is not connected/, /Too many connections/)
+        if e.message =~ Regexp.union(/read-only/, /Too many connections/)
           if retries < reconnect_attempts
             wait = initial_retry_wait * retries
             wait = [wait, max_retry_wait].min if max_retry_wait
